@@ -4,7 +4,7 @@ from tkinter import ttk, messagebox
 class ExpenseTrackerApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("DecodeLabs Expense Tracker")
+        self.root.title("Expense Tracker")
         self.root.geometry("450x600")
         self.root.configure(bg="#121212")  # Sleek Dark Background
         
@@ -54,7 +54,7 @@ class ExpenseTrackerApp:
         header_label = ttk.Label(header_frame, text="EXPENSE TRACKER", style="Header.TLabel")
         header_label.pack()
         
-        sub_header = ttk.Label(header_frame, text="Powered by DecodeLabs | Batch 2026", 
+        sub_header = ttk.Label(header_frame, text="Personal Expense Management", 
                                background="#121212", foreground="#666666", font=("Segoe UI", 8))
         sub_header.pack()
 
