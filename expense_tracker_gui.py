@@ -6,7 +6,7 @@ class ExpenseTrackerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Akhunzada's Expense Tracker")
-        self.root.geometry("500x800")
+        self.root.geometry("500x900")
         self.root.configure(bg="#0F0F0F")
         
         # Internal Data (All stored in USD for base calculation)
@@ -116,7 +116,7 @@ class ExpenseTrackerApp:
         
         ttk.Label(history_frame, text="RECENT TRANSACTIONS", background=self.bg_color, foreground=self.muted_text, font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(0, 10))
         
-        self.history_listbox = tk.Listbox(history_frame, font=("Segoe UI", 11), bg="#1A1A1A", fg="#EEEEEE", relief="flat", borderwidth=0, highlightthickness=0, selectbackground="#333333", activestyle="none", height=8)
+        self.history_listbox = tk.Listbox(history_frame, font=("Segoe UI", 11), bg="#1A1A1A", fg="#EEEEEE", relief="flat", borderwidth=0, highlightthickness=0, selectbackground="#333333", activestyle="none", height=15)
         self.history_listbox.pack(side="left", fill="both", expand=True)
         
         scrollbar = ttk.Scrollbar(history_frame, orient="vertical", command=self.history_listbox.yview)
