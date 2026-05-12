@@ -117,10 +117,16 @@ class ExpenseTrackerApp:
         self.total_cur_menu.pack(side="right")
         self.total_cur_menu.bind("<<ComboboxSelected>>", self.refresh_total_display)
         
-        self.total_label = ttk.Label(total_card, text="$0.00", style="Total.TLabel")
+        self.total_label = tk.Label(total_card, text="$0.00", 
+                                    bg=self.card_color, 
+                                    fg=self.accent_color, 
+                                    font=("Segoe UI", 32, "bold"))
         self.total_label.pack(pady=10)
         
         ttk.Button(total_card, text="RESET DATA", style="Clear.TButton", command=self.reset_tracker).pack(pady=(5, 0))
+        
+        # Initial Refresh
+        self.refresh_total_display()
 
     def update_input_label(self, event=None):
         selection = self.input_cur_var.get()
