@@ -86,24 +86,9 @@ class ExpenseTrackerApp:
         self.amount_entry.pack(fill="x", pady=(5, 20), ipady=8)
         self.amount_entry.bind("<Return>", lambda event: self.add_expense())
         
-        ttk.Button(input_card, text="ADD TO EXPENSES", style="Add.TButton", command=self.add_expense).pack(fill="x", ipady=10)
-
-        # 3. History Section
-        history_frame = ttk.Frame(self.root, style="TFrame", padding=20)
-        history_frame.pack(fill="both", expand=True)
-        
-        ttk.Label(history_frame, text="RECENT TRANSACTIONS", background=self.bg_color, foreground=self.muted_text, font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(0, 10))
-        
-        self.history_listbox = tk.Listbox(history_frame, font=("Segoe UI", 11), bg="#1A1A1A", fg="#EEEEEE", relief="flat", borderwidth=0, highlightthickness=0, selectbackground="#333333", activestyle="none")
-        self.history_listbox.pack(side="left", fill="both", expand=True)
-        
-        scrollbar = ttk.Scrollbar(history_frame, orient="vertical", command=self.history_listbox.yview)
-        scrollbar.pack(side="right", fill="y")
-        self.history_listbox.config(yscrollcommand=scrollbar.set)
-
-        # 4. Total Card (With its own currency selector)
+        ttk.Button(input_card, text="ADD TO EXPENSES", style="Add.TButton", command=self.add_expense).pack(fill="x", ipady=10)        # 4. Total Card (Packed FIRST with side="bottom" to ensure visibility)
         total_card = ttk.Frame(self.root, style="Card.TFrame", padding=20)
-        total_card.pack(fill="x", padx=20, pady=(10, 30))
+        total_card.pack(side="bottom", fill="x", padx=20, pady=(10, 20))
         
         total_header = ttk.Frame(total_card, style="Card.TFrame")
         total_header.pack(fill="x")
@@ -124,9 +109,23 @@ class ExpenseTrackerApp:
         self.total_label.pack(pady=10)
         
         ttk.Button(total_card, text="RESET DATA", style="Clear.TButton", command=self.reset_tracker).pack(pady=(5, 0))
+
+        # 3. History Section (Packed LAST to fill remaining space)
+        history_frame = ttk.Frame(self.root, style="TFrame", padding=20)
+        history_frame.pack(fill="both", expand=True)
+        
+        ttk.Label(history_frame, text="RECENT TRANSACTIONS", background=self.bg_color, foreground=self.muted_text, font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(0, 10))
+        
+        self.history_listbox = tk.Listbox(history_frame, font=("Segoe UI", 11), bg="#1A1A1A", fg="#EEEEEE", relief="flat", borderwidth=0, highlightthickness=0, selectbackground="#333333", activestyle="none", height=8)
+        self.history_listbox.pack(side="left", fill="both", expand=True)
+        
+        scrollbar = ttk.Scrollbar(history_frame, orient="vertical", command=self.history_listbox.yview)
+        scrollbar.pack(side="right", fill="y")
+        self.history_listbox.config(yscrollcommand=scrollbar.set)
         
         # Initial Refresh
         self.refresh_total_display()
+)
 
     def update_input_label(self, event=None):
         selection = self.input_cur_var.get()
