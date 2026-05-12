@@ -6,7 +6,7 @@ class ExpenseTrackerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Akhunzada's Expense Tracker")
-        self.root.geometry("500x900")
+        self.root.geometry("520x900")
         self.root.configure(bg="#0F0F0F")
         
         # Internal Data (All stored in USD for base calculation)
@@ -38,17 +38,15 @@ class ExpenseTrackerApp:
         self.style.configure("Card.TFrame", background=self.card_color)
         self.style.configure("Header.TLabel", background=self.bg_color, foreground=self.secondary_color, font=("Segoe UI", 16, "bold"))
         self.style.configure("Title.TLabel", background=self.bg_color, foreground=self.text_color, font=("Segoe UI", 20, "bold"))
-        self.style.configure("Sub.TLabel", background=self.bg_color, foreground=self.muted_text, font=("Segoe UI", 9))
-        self.style.configure("Total.TLabel", background=self.card_color, foreground=self.accent_color, font=("Segoe UI", 32, "bold"))
         self.style.configure("Label.TLabel", background=self.card_color, foreground=self.text_color, font=("Segoe UI", 10, "bold"))
         self.style.configure("Add.TButton", font=("Segoe UI", 11, "bold"), background=self.primary_color, foreground="white", borderwidth=0)
         self.style.map("Add.TButton", background=[('active', '#560BAD')], foreground=[('active', 'white')])
         self.style.configure("Clear.TButton", font=("Segoe UI", 10), background="#333333", foreground="#BBBBBB", borderwidth=0)
 
-        # UI LAYOUT
+        # ===================== UI LAYOUT =====================
         
-        # 1. Header Section
-        header_frame = ttk.Frame(self.root, style="TFrame", padding=(20, 30, 20, 10))
+        # --- 1. Header ---
+        header_frame = ttk.Frame(self.root, style="TFrame", padding=(20, 20, 20, 5))
         header_frame.pack(fill="x")
         
         header_top = ttk.Frame(header_frame, style="TFrame")
@@ -59,7 +57,7 @@ class ExpenseTrackerApp:
         # Input Currency Selector
         input_cur_frame = ttk.Frame(header_top, style="TFrame")
         input_cur_frame.pack(side="right")
-        ttk.Label(input_cur_frame, text="Input Cur: ", font=("Segoe UI", 8), foreground=self.muted_text, background=self.bg_color).pack(side="left")
+        ttk.Label(input_cur_frame, text="Input: ", font=("Segoe UI", 8), foreground=self.muted_text, background=self.bg_color).pack(side="left")
         self.input_cur_var = tk.StringVar(value="USD ($)")
         self.input_cur_menu = ttk.Combobox(input_cur_frame, textvariable=self.input_cur_var, 
                                           values=list(self.rates.keys()), 
@@ -67,33 +65,39 @@ class ExpenseTrackerApp:
         self.input_cur_menu.pack(side="left")
         self.input_cur_menu.bind("<<ComboboxSelected>>", self.update_input_label)
         
-        title_label = ttk.Label(header_frame, text="Expense Tracker", style="Title.TLabel")
-        title_label.pack(anchor="w")
-        
-        # 2. Input Card
-        input_card = ttk.Frame(self.root, style="Card.TFrame", padding=20)
-        input_card.pack(fill="x", padx=20, pady=10)
+        ttk.Label(header_frame, text="Expense Tracker", style="Title.TLabel").pack(anchor="w")
+
+        # --- 2. Input Card ---
+        input_card = ttk.Frame(self.root, style="Card.TFrame", padding=15)
+        input_card.pack(fill="x", padx=20, pady=(5, 5))
         
         ttk.Label(input_card, text="ITEM NAME", style="Label.TLabel").pack(anchor="w")
-        self.item_entry = tk.Entry(input_card, font=("Segoe UI", 12), bg="#2D2D2D", fg="#FFFFFF", insertbackground="white", relief="flat", highlightthickness=1, highlightbackground="#444444", highlightcolor=self.primary_color)
-        self.item_entry.pack(fill="x", pady=(5, 15), ipady=8)
+        self.item_entry = tk.Entry(input_card, font=("Segoe UI", 12), bg="#2D2D2D", fg="#FFFFFF", 
+                                   insertbackground="white", relief="flat", highlightthickness=1, 
+                                   highlightbackground="#444444", highlightcolor=self.primary_color)
+        self.item_entry.pack(fill="x", pady=(3, 10), ipady=6)
         self.item_entry.insert(0, "e.g. Coffee")
         self.item_entry.bind("<FocusIn>", lambda e: self.clear_placeholder(self.item_entry, "e.g. Coffee"))
         
         self.amount_label = ttk.Label(input_card, text="AMOUNT ($)", style="Label.TLabel")
         self.amount_label.pack(anchor="w")
-        self.amount_entry = tk.Entry(input_card, font=("Segoe UI", 12), bg="#2D2D2D", fg="#FFFFFF", insertbackground="white", relief="flat", highlightthickness=1, highlightbackground="#444444", highlightcolor=self.primary_color)
-        self.amount_entry.pack(fill="x", pady=(5, 20), ipady=8)
+        self.amount_entry = tk.Entry(input_card, font=("Segoe UI", 12), bg="#2D2D2D", fg="#FFFFFF", 
+                                     insertbackground="white", relief="flat", highlightthickness=1, 
+                                     highlightbackground="#444444", highlightcolor=self.primary_color)
+        self.amount_entry.pack(fill="x", pady=(3, 12), ipady=6)
         self.amount_entry.bind("<Return>", lambda event: self.add_expense())
         
-        ttk.Button(input_card, text="ADD TO EXPENSES", style="Add.TButton", command=self.add_expense).pack(fill="x", ipady=10)        # 4. Total Card (Packed FIRST with side="bottom" to ensure visibility)
-        total_card = ttk.Frame(self.root, style="Card.TFrame", padding=20)
-        total_card.pack(side="bottom", fill="x", padx=20, pady=(10, 20))
+        ttk.Button(input_card, text="ADD TO EXPENSES", style="Add.TButton", command=self.add_expense).pack(fill="x", ipady=8)
+
+        # --- 3. Total Card (packed BEFORE history so it stays at bottom) ---
+        total_card = ttk.Frame(self.root, style="Card.TFrame", padding=15)
+        total_card.pack(side="bottom", fill="x", padx=20, pady=(5, 15))
         
         total_header = ttk.Frame(total_card, style="Card.TFrame")
         total_header.pack(fill="x")
         
-        ttk.Label(total_header, text="TOTAL BALANCE", background=self.card_color, foreground=self.muted_text, font=("Segoe UI", 9, "bold")).pack(side="left")
+        ttk.Label(total_header, text="TOTAL BALANCE", background=self.card_color, 
+                  foreground=self.muted_text, font=("Segoe UI", 9, "bold")).pack(side="left")
         
         self.total_cur_var = tk.StringVar(value="USD ($)")
         self.total_cur_menu = ttk.Combobox(total_header, textvariable=self.total_cur_var, 
@@ -102,30 +106,35 @@ class ExpenseTrackerApp:
         self.total_cur_menu.pack(side="right")
         self.total_cur_menu.bind("<<ComboboxSelected>>", self.refresh_total_display)
         
-        self.total_label = tk.Label(total_card, text="$0.00", 
-                                    bg=self.card_color, 
-                                    fg=self.accent_color, 
-                                    font=("Segoe UI", 32, "bold"))
-        self.total_label.pack(pady=10)
+        self.total_label = tk.Label(total_card, text="$0.00", bg=self.card_color, 
+                                    fg=self.accent_color, font=("Segoe UI", 28, "bold"))
+        self.total_label.pack(pady=8)
         
-        ttk.Button(total_card, text="RESET DATA", style="Clear.TButton", command=self.reset_tracker).pack(pady=(5, 0))
+        ttk.Button(total_card, text="RESET DATA", style="Clear.TButton", command=self.reset_tracker).pack()
 
-        # 3. History Section (Packed LAST to fill remaining space)
-        history_frame = ttk.Frame(self.root, style="TFrame", padding=20)
+        # --- 4. History Section (fills ALL remaining space between input and total) ---
+        history_frame = ttk.Frame(self.root, style="TFrame", padding=(20, 10, 20, 5))
         history_frame.pack(fill="both", expand=True)
         
-        ttk.Label(history_frame, text="RECENT TRANSACTIONS", background=self.bg_color, foreground=self.muted_text, font=("Segoe UI", 9, "bold")).pack(anchor="w", pady=(0, 10))
+        tk.Label(history_frame, text="RECENT TRANSACTIONS", bg=self.bg_color, 
+                 fg=self.secondary_color, font=("Segoe UI", 11, "bold")).pack(anchor="w", pady=(0, 8))
         
-        self.history_listbox = tk.Listbox(history_frame, font=("Segoe UI", 11), bg="#1A1A1A", fg="#EEEEEE", relief="flat", borderwidth=0, highlightthickness=0, selectbackground="#333333", activestyle="none", height=15)
+        # Listbox container with a visible border
+        list_container = tk.Frame(history_frame, bg="#2A2A2A", bd=1)
+        list_container.pack(fill="both", expand=True)
+        
+        self.history_listbox = tk.Listbox(list_container, font=("Segoe UI", 11), 
+                                          bg="#1A1A1A", fg="#EEEEEE", relief="flat", 
+                                          borderwidth=0, highlightthickness=0, 
+                                          selectbackground="#333333", activestyle="none")
         self.history_listbox.pack(side="left", fill="both", expand=True)
         
-        scrollbar = ttk.Scrollbar(history_frame, orient="vertical", command=self.history_listbox.yview)
+        scrollbar = ttk.Scrollbar(list_container, orient="vertical", command=self.history_listbox.yview)
         scrollbar.pack(side="right", fill="y")
         self.history_listbox.config(yscrollcommand=scrollbar.set)
         
         # Initial Refresh
         self.refresh_total_display()
-
 
     def update_input_label(self, event=None):
         selection = self.input_cur_var.get()
@@ -148,8 +157,10 @@ class ExpenseTrackerApp:
         item_name = self.item_entry.get().strip()
         amount_str = self.amount_entry.get().strip()
         
-        if not amount_str: return
-        if not item_name or item_name == "e.g. Coffee": item_name = "General Expense"
+        if not amount_str:
+            return
+        if not item_name or item_name == "e.g. Coffee":
+            item_name = "General Expense"
             
         try:
             amount = float(amount_str)
@@ -167,7 +178,7 @@ class ExpenseTrackerApp:
             # Formatting for History (Shows original currency)
             symbol = input_cur.split("(")[1].replace(")", "")
             timestamp = datetime.now().strftime("%H:%M")
-            entry_text = f" {timestamp}  {item_name:<18}  +{symbol}{amount:,.2f}"
+            entry_text = f"  {timestamp}   {item_name:<20}  +{symbol}{amount:,.2f}"
             
             # Update UI
             self.refresh_total_display()
