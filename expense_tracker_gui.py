@@ -6,11 +6,12 @@ class ExpenseTrackerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Akhunzada's Expense Tracker")
-        self.root.geometry("480x700")
+        self.root.geometry("480x750")
         self.root.configure(bg="#0F0F0F")  # Deep Black Background
         
         self.total_spent = 0.0
         self.history = []
+        self.currency_symbol = "$" # Default
 
         # Custom Styles
         self.style = ttk.Style()
@@ -76,8 +77,19 @@ class ExpenseTrackerApp:
         header_frame = ttk.Frame(self.root, style="TFrame", padding=(20, 30, 20, 10))
         header_frame.pack(fill="x")
         
-        header_label = ttk.Label(header_frame, text="AKHUNZADA'S", style="Header.TLabel")
-        header_label.pack(anchor="w")
+        header_top = ttk.Frame(header_frame, style="TFrame")
+        header_top.pack(fill="x")
+        
+        header_label = ttk.Label(header_top, text="AKHUNZADA'S", style="Header.TLabel")
+        header_label.pack(side="left")
+        
+        # Currency Selector in Header
+        self.currency_var = tk.StringVar(value="USD ($)")
+        self.currency_menu = ttk.Combobox(header_top, textvariable=self.currency_var, 
+                                          values=["USD ($)", "EUR (€)", "PKR (Rs.)"], 
+                                          state="readonly", width=8, font=("Segoe UI", 9))
+        self.currency_menu.pack(side="right", pady=5)
+        self.currency_menu.bind("<<ComboboxSelected>>", self.update_currency)
         
         title_label = ttk.Label(header_frame, text="Expense Tracker", style="Title.TLabel")
         title_label.pack(anchor="w")
@@ -105,7 +117,8 @@ class ExpenseTrackerApp:
         self.item_entry.bind("<FocusIn>", lambda e: self.clear_placeholder(self.item_entry, "e.g. Coffee"))
         
         # Amount
-        ttk.Label(input_card, text="AMOUNT ($)", style="Label.TLabel").pack(anchor="w")
+        self.amount_label = ttk.Label(input_card, text=f"AMOUNT ({self.currency_symbol})", style="Label.TLabel")
+        self.amount_label.pack(anchor="w")
         self.amount_entry = tk.Entry(input_card, 
                                      font=("Segoe UI", 12), 
                                      bg="#2D2D2D", 
@@ -150,11 +163,27 @@ class ExpenseTrackerApp:
         ttk.Label(footer_card, text="TOTAL BALANCE SPENT", 
                   background=self.card_color, foreground=self.muted_text, font=("Segoe UI", 9, "bold")).pack()
         
-        self.total_label = ttk.Label(footer_card, text="$0.00", style="Total.TLabel")
+        self.total_label = ttk.Label(footer_card, text=f"{self.currency_symbol}0.00", style="Total.TLabel")
         self.total_label.pack(pady=5)
         
         self.clear_button = ttk.Button(footer_card, text="RESET DATA", style="Clear.TButton", command=self.reset_tracker)
         self.clear_button.pack(pady=(10, 0))
+
+    def update_currency(self, event=None):
+        selection = self.currency_var.get()
+        if "($)" in selection:
+            self.currency_symbol = "$"
+        elif "(€)" in selection:
+            self.currency_symbol = "€"
+        elif "(Rs.)" in selection:
+            self.currency_symbol = "Rs."
+            
+        # Update UI Labels
+        self.amount_label.config(text=f"AMOUNT ({self.currency_symbol})")
+        self.total_label.config(text=f"{self.currency_symbol}{self.total_spent:,.2f}")
+        
+        # Note: History list is static strings, so it won't retroactively change symbols 
+        # unless we redraw it. Let's keep it as is for now or redraw if desired.
 
     def clear_placeholder(self, entry, placeholder):
         if entry.get() == placeholder:
@@ -179,10 +208,10 @@ class ExpenseTrackerApp:
             # Update data
             self.total_spent += amount
             timestamp = datetime.now().strftime("%H:%M")
-            entry_text = f" {timestamp}  {item_name:<18}  +${amount:,.2f}"
+            entry_text = f" {timestamp}  {item_name:<18}  +{self.currency_symbol}{amount:,.2f}"
             
             # Update UI
-            self.total_label.config(text=f"${self.total_spent:,.2f}")
+            self.total_label.config(text=f"{self.currency_symbol}{self.total_spent:,.2f}")
             self.history_listbox.insert(0, entry_text) 
             
             # Clear input
@@ -197,8 +226,7 @@ class ExpenseTrackerApp:
     def reset_tracker(self):
         if messagebox.askyesno("Reset Tracker", "Clear all transaction history?"):
             self.total_spent = 0.0
-            self.history = []
-            self.total_label.config(text="$0.00")
+            self.total_label.config(text=f"{self.currency_symbol}0.00")
             self.history_listbox.delete(0, tk.END)
             self.amount_entry.delete(0, tk.END)
             self.item_entry.delete(0, tk.END)
@@ -206,6 +234,5 @@ class ExpenseTrackerApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    # Set window icon if possible (optional)
     app = ExpenseTrackerApp(root)
     root.mainloop()
