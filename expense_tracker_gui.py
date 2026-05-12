@@ -125,7 +125,7 @@ class ExpenseTrackerApp:
         
         # Initial Refresh
         self.refresh_total_display()
-)
+
 
     def update_input_label(self, event=None):
         selection = self.input_cur_var.get()
